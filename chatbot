@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>都市レコメンドチャット</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    #chat { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; margin-bottom: 10px; background: #f9f9f9; }
+    input, button { padding: 8px; font-size: 1em; }
+    .user { color: blue; font-weight: bold; }
+    .bot { color: green; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+
+<h2>チャットで都市を探索しよう</h2>
+<div id="chat"></div>
+<input type="text" id="userInput" placeholder="都市名を入力（例：ローマ）">
+<button onclick="sendMessage()">送信</button>
+
+<script>
+const data = [
+  { country: "イタリア", city: "ローマ", description: "ローマは首都で、古代ローマ帝国の中心でした。", category: "首都" },
+  { country: "イタリア", city: "ベネチア", description: "ベネチアは港町で、美しい運河が有名です。", category: "港町" },
+  { country: "フランス", city: "パリ", description: "パリはフランスの首都で、芸術と文化の中心地です。", category: "首都" },
+  { country: "イギリス", city: "ロンドン", description: "ロンドンはイギリスの首都で、多国籍な文化が特徴です。", category: "首都" }
+];
+
+function sendMessage() {
+  const input = document.getElementById("userInput").value.trim();
+  const chat = document.getElementById("chat");
+
+  if (!input) return;
+
+  chat.innerHTML += `<div class="user">あなた：${input}</div>`;
+
+  const main = data.find(d => d.city === input);
+  if (!main) {
+    chat.innerHTML += `<div class="bot">その都市の情報は見つかりませんでした。</div>`;
+  } else {
+    chat.innerHTML += `<div class="bot">${main.description}</div>`;
+
+    const sameCountry = data.filter(d => d.country === main.country && d.city !== main.city);
+    const sameCategory = data.filter(d => d.category === main.category && d.city !== main.city);
+
+    if (sameCountry.length > 0) {
+      sameCountry.forEach(d => {
+        chat.innerHTML += `<div class="bot">${main.country}に興味があるなら、${d.city}！<br>${d.description}</div>`;
+      });
+    }
+
+    if (sameCategory.length > 0) {
+      sameCategory.forEach(d => {
+        chat.innerHTML += `<div class="bot">同じカテゴリ（${main.category}）に興味があるなら、${d.city}！<br>${d.description}</div>`;
+      });
+    }
+  }
+
+  document.getElementById("userInput").value = "";
+  chat.scrollTop = chat.scrollHeight;
+}
+</script>
+
+</body>
+</html>
